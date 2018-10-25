@@ -39,7 +39,7 @@ public:
 	  if ((fronthalfsize() == 0) && (backhalfsize() != 0)) {
 		  for (int i = 0; i < ceil((backhalfsize() / 2)); i++) {
 			  fronthalf_.push_back(backhalf_[0]);
-              backhalf_.erase(0);
+              backhalf_.erase(backhalf_.begin());
 		  }
 	  }
 	  fronthalf_.pop_back();
@@ -50,7 +50,7 @@ public:
 	  if ((fronthalfsize() != 0) && (backhalfsize() == 0)) {
 		  for (int i = 0; i < ceiling((fronthalfsize() / 2)); i++) {
 			  backhalf_.push_back(fronthalf_[0]);
-			  fronthalf_.erase(0);
+			  fronthalf_.erase(fronthalf_.begin());
 		  }
 	  }
 	  backhalf_.pop_back();
