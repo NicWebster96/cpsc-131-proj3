@@ -29,10 +29,11 @@ public:
     size_t backhalfsize() const { return backhalf_.size(); }
     bool empty()  const { return size() == 0; }
     
-    // balance queue across both vectors if pop_front/back is requested on an empty vector
-    // e.g., minideque has this:                  | ABCDEFG
-    // after pop_front                        BCD | EFG (A discarded)
-    // symmetric logic for converse case: ABCDEFG | ===> ABC | DEF (G discarded) after pop_back
+    // if both halves are empty, throw exception.
+    // if front is empty and back is not empty,
+    //   from the beginning of the backhalf to the midway point, transfer elements
+    //   to front half and erase the element that got transferred from back half.
+    // if front half is not empty, pop_back the front half.
     
     void pop_front() {
         if (empty()) { throw std::range_error("popping empty queue"); }
@@ -46,6 +47,8 @@ public:
         fronthalf_.pop_back();
     }
     
+    // same as pop_front function, but the opposite sides.
+    
     void pop_back() {
         if (empty()) { throw std::range_error("popping empty queue"); }
         if ((backhalfsize() == 0) && (fronthalfsize() != 0)) {
@@ -55,48 +58,36 @@ public:
                 fronthalf_.erase(fronthalf_.begin());
             }
         }
-        fronthalf_.pop_back();
+        backhalf_.pop_back();
     }
     
-    void push_front(const T& value) {
-        fronthalf_.push_back(value);
-    }
-    void push_back(const T& value) {
-        backhalf_.push_back(value);
-    }
+    void push_front(const T& value) { fronthalf_.push_back(value); }
+    void push_back(const T& value) { backhalf_.push_back(value); }
     
     const T& front() const {
         if (fronthalf_.empty()) { return backhalf_.front(); }
-        else {
-            return fronthalf_.back();
-        }
+        else { return fronthalf_.back(); }
     }
+    
     const T& back() const {
         if (backhalf_.empty()) { return fronthalf_.front(); }
-        else {
-            return backhalf_.back();
-        }
+        else { return backhalf_.back(); }
     }
     
     T& front() {
         if (fronthalf_.empty()) { return backhalf_.front(); }
-        else {
-            return fronthalf_.back();
-        }
+        else { return fronthalf_.back(); }
     }
     
     T& back() {
         if (backhalf_.empty()) { return fronthalf_.front(); }
-        else {
-            return backhalf_.back();
-        }
+        else { return backhalf_.back(); }
     }
     
     const T& operator[](size_t index) const {
         if (index >= fronthalfsize()) {
             return backhalf_.at(index - fronthalfsize());
-        }
-        else {
+        } else {
             return fronthalf_.at(fronthalfsize() - index - 1);
         }
     }
@@ -104,8 +95,7 @@ public:
     T& operator[](size_t index) {
         if (index >= fronthalfsize()) {
             return backhalf_.at(index - fronthalfsize());
-        }
-        else {
+        } else {
             return fronthalf_.at(fronthalfsize() - index - 1);
         }
     }
