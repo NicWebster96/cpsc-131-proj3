@@ -37,28 +37,64 @@ public:
     
     void pop_front() {
         if (empty()) { throw std::range_error("popping empty queue"); }
-        if ((fronthalfsize() == 0) && (backhalfsize() != 0)) {
-            int midpt = (backhalfsize() / 2);
-            for (int i = 0; i <= midpt; i++) {
-                fronthalf_.push_back(backhalf_[0]);
+        if (!(fronthalf_.empty())) { fronthalf_.pop_back(); }
+        else {
+                int midpt = (backhalfsize() - 1) / 2;
+                int startIndex = midpt + 1;
+                int endIndex = backhalfsize() - 1;
+                
+                for (int i = 0; i < midpt; i++) {
+                    fronthalf_.push_back(backhalf_[midpt-i]);
+                }
+            
                 backhalf_.erase(backhalf_.begin());
-            }
+            
+                for (int j=0; j <= (endIndex - startIndex); j++) {
+                    backhalf_[j] = backhalf_[startIndex + j - 1];
+                }
+            
+                if ((backhalf_.size() % 2) == 1) {
+                    for (int k=0; k<(endIndex - startIndex); k++) {
+                        backhalf_.pop_back();
+                    }
+                } else {
+                    for (int k=0; k<(endIndex - startIndex); k++) {
+                        backhalf_.pop_back();
+                    }
+                }
         }
-        fronthalf_.pop_back();
     }
-    
+
     // same as pop_front function, but the opposite sides.
     
     void pop_back() {
         if (empty()) { throw std::range_error("popping empty queue"); }
-        if ((backhalfsize() == 0) && (fronthalfsize() != 0)) {
-            int midpt = (fronthalfsize() / 2);
-            for (int i = 0; i <= midpt; i++) {
-                backhalf_.push_back(fronthalf_[0]);
-                fronthalf_.erase(fronthalf_.begin());
+        if (!(backhalf_.empty())) { backhalf_.pop_back(); }
+        else {
+            int midpt = (fronthalfsize() - 1) / 2;
+            int startIndex = midpt + 1;
+            int endIndex = fronthalfsize() - 1;
+            
+            for (int i = 0; i < midpt; i++) {
+                backhalf_.push_back(fronthalf_[midpt-i]);
+            }
+            
+            fronthalf_.erase(fronthalf_.begin());
+            
+            for (int j=0; j <= (endIndex - startIndex); j++) {
+                fronthalf_[j] = fronthalf_[startIndex + j - 1];
+            }
+            
+            if ((fronthalf_.size() % 2) == 1) {
+                for (int k=0; k<(endIndex - startIndex); k++) {
+                    fronthalf_.pop_back();
+                }
+            } else {
+                for (int k=0; k<(endIndex - startIndex); k++) {
+                    fronthalf_.pop_back();
+                }
             }
         }
-        backhalf_.pop_back();
     }
     
     void push_front(const T& value) { fronthalf_.push_back(value); }
@@ -84,19 +120,21 @@ public:
         else { return backhalf_.back(); }
     }
     
+    //returns the value at a given index from the dequeue (const)
     const T& operator[](size_t index) const {
         if (index >= fronthalfsize()) {
             return backhalf_.at(index - fronthalfsize());
         } else {
-            return fronthalf_.at(fronthalfsize() - index - 1);
+            return fronthalf_.at(fronthalfsize() - index);
         }
     }
     
+    //returns the value at a given index from the dequeue
     T& operator[](size_t index) {
         if (index >= fronthalfsize()) {
             return backhalf_.at(index - fronthalfsize());
         } else {
-            return fronthalf_.at(fronthalfsize() - index - 1);
+            return fronthalf_.at(fronthalfsize() - index);
         }
     }
     
